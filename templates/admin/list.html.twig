@@ -1,0 +1,51 @@
+{% extends 'admin/layout.html.twig' %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h1 class="mt-5">Users</h1>
+            <p class="lead">There are users in the database</p>
+        </div>
+    </div>
+
+    {% if pagerfanta.currentPageResults|length %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th class="min_col">Role</th>
+                    <th class="min_col"></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for user in pagerfanta.currentPageResults %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td class="min_col">
+                        {% for role in user.roles %}
+                            {{ roles[role] }}
+                        {% endfor %}
+                    </td>
+                    <td class="min_col">
+                        {% if app.user.hasRole('ROLE_MODERATOR') or app.user.hasRole('ROLE_ADMIN') %}
+                            <a href="{{ path('user_edit', { id : user.id }) }}"><i class="fa fa-edit"></i></a>
+                        {% endif %}
+                        {% if app.user.hasRole('ROLE_ADMIN') %}
+                            <a href="{{ path('user_delete', { id : user.id }) }}"><i class="fa fa-times text-danger"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% if pagerfanta.haveToPaginate %}
+            <div class="text-center">
+                {{ pagerfanta(pagerfanta, 'twitter_bootstrap4', { prev_message: '←', next_message: '→' }) }}
+            </div>
+        {% endif %}
+    {% else %}
+        {{ 'no_data'|trans({}, 'messages') }}
+    {% endif %}
+{% endblock content %}

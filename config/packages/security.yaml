@@ -1,0 +1,37 @@
+security:
+    encoders:
+        App\Entity\User:
+            algorithm: bcrypt
+    providers:
+            our_db_provider:
+               entity:
+                   class: App\Entity\User
+                   property: username
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            pattern: ^/
+            provider: our_db_provider
+            anonymous: ~
+            form_login:
+                login_path: login
+                check_path: login
+                default_target_path: user_list
+            logout: true
+
+    access_control:
+          - { path: ^/users/create, roles: ROLE_ADMIN }
+          - { path: ^/users/delete, roles: ROLE_ADMIN }
+          - { path: ^/users/edit, roles: ROLE_MODERATOR }
+
+          - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+          - { path: ^/, roles: ROLE_USER }
+
+
+
+    role_hierarchy:
+              ROLE_MODERATOR:   ROLE_USER
+              ROLE_ADMIN:       ROLE_MODERATOR
+
